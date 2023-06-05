@@ -1,42 +1,87 @@
-package salesforce_rest;
+
+import java.io.IOException;
+
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.JSONException;
 
 public class Main {
 
+    static final String USERNAME     = "vasu.chouhan@verafin.com.vasudev";
+    static final String PASSWORD     = "Hondacivic@19059trvIwHBSSpUZXXRt8Ylm8ckk5";
+    static final String LOGINURL     = "https://test.salesforce.com";
+    static final String GRANTSERVICE = "/services/oauth2/token?grant_type=password";
+    static final String CLIENTID     = "3MVG9ZM6Cuht.9Ssuymzz6ekF4EIkrBrdq.UiQhFZOapHBzhExlEmvDWKl9HJ_UdPBc6C.x4Oe_pzufa1wm9W";
+    static final String CLIENTSECRET = "FDE7BD9EE04E8BCC670F4BE8954EF9AEB2AB3B0B617E08E04CF039E7C1126308";
+
+
     public static void main(String[] args) {
-        String n1 = "abcdefghijklmnopqrstuvwxyz";
-        String n2 = "the quick Brow fox jumps over lazy dog";
 
-        n2 = n2.replace(" ","");
+        HttpClient httpclient = HttpClientBuilder.create().build();
 
-        n1 = n1.toLowerCase();
-        n2 = n2.toLowerCase();
+        // Assemble the login request URL
+        String loginURL = LOGINURL +
+                GRANTSERVICE +
+                "&client_id=" + CLIENTID +
+                "&client_secret=" + CLIENTSECRET +
+                "&username=" + USERNAME +
+                "&password=" + PASSWORD;
 
-        String[] arr1 = n1.split("");
-        String[] arr2 = n2.split("");
+        // Login requests must be POSTs
+        HttpPost httpPost = new HttpPost(loginURL);
+        HttpResponse response = null;
 
-        int arrlen = arr1.length;
-        int n = 0;
-
-        for(int i = 0; i < arr1.length; i++ ){
-            for(int j = 0; j < arr2.length; j++ ){
-                if(arr1[i].equals(arr2[j])){
-                    n++;
-                    break;
-                }
-                else{
-                }
-            }
+        try {
+            // Execute the login POST request
+            response = httpclient.execute(httpPost);
+        } catch (ClientProtocolException cpException) {
+            cpException.printStackTrace();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
         }
 
-        if(n==arrlen){
-            System.out.println("String is Anagram");
+        // verify response is HTTP OK
+        final int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != HttpStatus.SC_OK) {
+            System.out.println("Error authenticating to Force.com: "+statusCode);
+            // Error is in EntityUtils.toString(response.getEntity())
+            return;
         }
-        else{
-            System.out.println("String is not Anagram");
+
+        String getResult = null;
+        try {
+            getResult = EntityUtils.toString(response.getEntity());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        JSONObject jsonObject = null;
+        String loginAccessToken = null;
+        String loginInstanceUrl = null;
+        try {
+            jsonObject = (JSONObject) new JSONTokener(getResult).nextValue();
+            loginAccessToken = jsonObject.getString("access_token");
+            loginInstanceUrl = jsonObject.getString("instance_url");
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
         }
 
+        System.out.println(response.getStatusLine());
+        System.out.println("Successful login");
+        System.out.println("  instance URL: "+loginInstanceUrl);
+        System.out.println("  access token/session ID: "+loginAccessToken);
 
+        // release connection
 
-
+        httpPost.releaseConnection();
     }
+
 }
