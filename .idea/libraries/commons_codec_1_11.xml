@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="commons-codec-1.11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../RestAPI/httpcomponents-client-4.5.14-bin/lib/commons-codec-1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../RestAPI/httpcomponents-client-4.5.14-bin/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../RestAPI/httpcomponents-client-4.5.14-bin/lib/httpclient-4.5.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../RestAPI/httpcomponents-client-4.5.14-bin/lib/httpcore-4.4.16.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../RestAPI/json-20230227.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
