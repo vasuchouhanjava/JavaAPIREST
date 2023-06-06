@@ -1,18 +1,17 @@
-
-import java.io.IOException;
-
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.util.EntityUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.json.JSONException;
+import java.io.IOException;
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Main {
 
@@ -79,9 +78,48 @@ public class Main {
         System.out.println("  instance URL: "+loginInstanceUrl);
         System.out.println("  access token/session ID: "+loginAccessToken);
 
-        // release connection
+        //createCase();
+
+        String caseSubject = "New Case Subject";
+        String caseDescription = "This is the case description";
+        String caseInternalAssessment = "This is internal Assessment";
+        String caseWarehouse = "test@verafin.com";
+        String caseOwner = "ETL";
+
+        String jsonPayload = String.format(
+                "{\"Subject\":\"%s\",\"Description\":\"%s\",\"Internal Assessment\":\"%s\",\"Warehouse\":\"%s\",\"CaseOwner\":\"%s\"}",
+                caseSubject,
+                caseDescription,
+                caseInternalAssessment,
+                caseWarehouse,
+                caseOwner
+
+        );
+        try {
+            URL url = new URL(loginInstanceUrl + "/services/data/v57.0/sobjects/Case");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer " + loginAccessToken);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+            outputStream.writeBytes(jsonPayload);
+            outputStream.flush();
+            outputStream.close();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                System.out.println("Case created successfully!");
+            } else {
+                System.out.println("Error creating the case. Response code: " + responseCode);
+            }
+
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         httpPost.releaseConnection();
     }
-
 }
