@@ -80,19 +80,14 @@ public class Main {
 
         //createCase();
 
-        String caseSubject = "New Case Subject";
+        String caseSubject = "Case created on June 6";
         String caseDescription = "This is the case description";
-        String caseInternalAssessment = "This is internal Assessment";
-        String caseWarehouse = "test@verafin.com";
-        String caseOwner = "ETL";
+
 
         String jsonPayload = String.format(
-                "{\"Subject\":\"%s\",\"Description\":\"%s\",\"Internal Assessment\":\"%s\",\"Warehouse\":\"%s\",\"CaseOwner\":\"%s\"}",
+                "{\"Subject\":\"%s\",\"Description\":\"%s\"}",
                 caseSubject,
-                caseDescription,
-                caseInternalAssessment,
-                caseWarehouse,
-                caseOwner
+                caseDescription
 
         );
         try {
