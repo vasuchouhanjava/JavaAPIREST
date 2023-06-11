@@ -80,37 +80,42 @@ public class Main {
 
         //createCase();
 
-        String caseSubject = "Case created on June 6";
-        String caseDescription = "This is the case description";
+        String caseSubject = "Test case June 10 7:06";
+        String caseDescription = "This is the case description=Dec 15, 2022";
+        String caseInternalassessment = "Internal assessemtn";
+        String  caseOwnerId = "00GC00000030elBMAQ";
 
 
         String jsonPayload = String.format(
-                "{\"Subject\":\"%s\",\"Description\":\"%s\"}",
+                "{\"subject\":\"%s\",\"description\":\"%s\",\"InternalAssessment__c\":\"%s\",\"OwnerId\":\"%s\"}",
                 caseSubject,
-                caseDescription
-
+                caseDescription,
+                caseInternalassessment,
+                caseOwnerId
         );
-        try {
-            URL url = new URL(loginInstanceUrl + "/services/data/v57.0/sobjects/Case");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "Bearer " + loginAccessToken);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
 
-            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+        System.out.println(jsonPayload);
+        try {
+            URL urlpostcase = new URL(loginInstanceUrl + "/services/data/v57.0/sobjects/Case");
+            HttpURLConnection connectionpostcase = (HttpURLConnection) urlpostcase.openConnection();
+            connectionpostcase.setRequestMethod("GET");
+            connectionpostcase.setRequestProperty("Authorization", "Bearer " + loginAccessToken);
+            connectionpostcase.setRequestProperty("Content-Type", "application/json");
+            connectionpostcase.setDoOutput(true);
+
+            DataOutputStream outputStream = new DataOutputStream(connectionpostcase.getOutputStream());
             outputStream.writeBytes(jsonPayload);
             outputStream.flush();
             outputStream.close();
 
-            int responseCode = connection.getResponseCode();
+            int responseCode = connectionpostcase.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_CREATED) {
                 System.out.println("Case created successfully!");
             } else {
                 System.out.println("Error creating the case. Response code: " + responseCode);
             }
 
-            connection.disconnect();
+            connectionpostcase.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         }
